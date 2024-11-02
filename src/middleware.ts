@@ -13,7 +13,7 @@ export const config = {
      * - images (image files)
      * - signin, signup (auth pages)
      */
-    "/((?!api|_next/static|_next/image|favicon.ico|images|public|signin|signup).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|images|public/.*|public|signin|signup).*)",
   ],
 };
 
