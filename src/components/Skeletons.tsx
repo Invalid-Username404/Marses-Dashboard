@@ -1,5 +1,6 @@
 "use client";
 import { motion } from "framer-motion";
+import { DynamicOptionsLoadingProps } from "next/dynamic";
 
 export function HeaderSkeleton() {
   return (
@@ -52,7 +53,7 @@ export function HeaderSkeleton() {
   );
 }
 
-export function ChartSkeleton() {
+export const ChartSkeleton = () => {
   return (
     <div className="bg-white p-4 rounded-lg shadow-lg min-h-[400px]">
       <div className="flex justify-between items-center mb-6">
@@ -102,4 +103,4 @@ export function ChartSkeleton() {
       />
     </div>
   );
-}
+};

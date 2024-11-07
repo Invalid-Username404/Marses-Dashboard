@@ -14,7 +14,7 @@ interface TrendData {
   [key: string]: TrendDataPoint[];
 }
 
-interface NewRequestTrendProps {
+export interface NewRequestTrendProps {
   data?: TrendData;
   className?: string;
 }

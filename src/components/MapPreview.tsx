@@ -15,7 +15,7 @@ import australiaTopoJson from "../../public/data/maps/australia-states.geojson";
 import { Region } from "@/types/dashboard";
 import { formatCurrency } from "@/utils/formatters";
 
-interface MapPreviewProps {
+export interface MapPreviewProps {
   data: Region[];
   className?: string;
 }

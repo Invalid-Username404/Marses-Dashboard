@@ -5,30 +5,30 @@ import { Metadata } from "next";
 import { GET } from "@/app/api/dashboard/route";
 import { Statistic, ChartData } from "@/types/dashboard";
 import DashboardHeader from "@/components/DashboardHeader";
-import { HeaderSkeleton, ChartSkeleton } from "@/components/Skeletons";
+import { ChartSkeleton, HeaderSkeleton } from "@/components/Skeletons";
+import DashboardGrid from "@/components/dashboard/DashboardGrid";
+import ChartContainer from "@/components/dashboard/ChartContainer";
+import { dashboardComponents } from "@/config/dashboard";
 
-// Dynamically import heavy components
-const BorrowersByState = dynamic(
-  () => import("@/components/BorrowersByState"),
-  {
-    loading: () => <ChartSkeleton />,
-    ssr: false,
-  }
-);
-
-const MapPreview = dynamic(() => import("@/components/MapPreview"), {
-  loading: () => <ChartSkeleton />,
-  ssr: false,
+// Dynamically import components
+const BorrowersByState = dynamic(dashboardComponents.BorrowersByState.import, {
+  loading: dashboardComponents.BorrowersByState.loading,
+  ssr: dashboardComponents.BorrowersByState.ssr,
 });
 
-const NewRequestTrend = dynamic(() => import("@/components/NewRequestTrend"), {
-  loading: () => <ChartSkeleton />,
-  ssr: false,
+const MapPreview = dynamic(dashboardComponents.MapPreview.import, {
+  loading: dashboardComponents.MapPreview.loading,
+  ssr: dashboardComponents.MapPreview.ssr,
 });
 
-const Details = dynamic(() => import("@/components/Details"), {
-  loading: () => <ChartSkeleton />,
-  ssr: false,
+const NewRequestTrend = dynamic(dashboardComponents.NewRequestTrend.import, {
+  loading: dashboardComponents.NewRequestTrend.loading,
+  ssr: dashboardComponents.NewRequestTrend.ssr,
+});
+
+const Details = dynamic(dashboardComponents.Details.import, {
+  loading: dashboardComponents.Details.loading,
+  ssr: dashboardComponents.Details.ssr,
 });
 
 // Metadata for SEO
@@ -74,6 +74,7 @@ const getDashboardData = unstable_cache(
 
 export default async function Dashboard() {
   const data = await getDashboardData();
+
   return (
     <section
       className="flex flex-col p-4 md:p-6 lg:p-8 space-y-6"
@@ -89,57 +90,44 @@ export default async function Dashboard() {
         />
       </Suspense>
 
-      {/* First Grid - Single column on medium, two columns on large */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
-        <div className="col-span-1 min-w-0">
-          <div className="bg-white rounded-lg shadow-lg min-h-[400px] lg:min-h-[500px]">
-            <Suspense fallback={<ChartSkeleton />}>
-              <BorrowersByState
-                data={data.charts.find(
-                  (c: ChartData) => c.chart_type === "pie"
-                )}
-              />
-            </Suspense>
-          </div>
-        </div>
-        <div className="col-span-1 min-w-0">
-          <div className="bg-white rounded-lg shadow-lg min-h-[400px] lg:min-h-[500px]">
-            <Suspense fallback={<ChartSkeleton />}>
-              <MapPreview data={data.regions} />
-            </Suspense>
-          </div>
-        </div>
-      </div>
+      <DashboardGrid>
+        <ChartContainer>
+          <Suspense fallback={<ChartSkeleton />}>
+            <BorrowersByState
+              data={data.charts.find((c: ChartData) => c.chart_type === "pie")}
+            />
+          </Suspense>
+        </ChartContainer>
+        <ChartContainer>
+          <Suspense fallback={<ChartSkeleton />}>
+            <MapPreview data={data.regions} />
+          </Suspense>
+        </ChartContainer>
+      </DashboardGrid>
 
-      {/* Second Grid - Single column on medium, two columns on large */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
-        <div className="col-span-1 min-w-0">
-          <div className="bg-white rounded-lg shadow-lg min-h-[400px] lg:min-h-[500px]">
-            <Suspense fallback={<ChartSkeleton />}>
-              <Details
-                data={data.statistics.filter(
-                  (stat: Statistic) =>
-                    stat.title === "Opened Request" ||
-                    stat.title === "Engaged" ||
-                    stat.title === "EOI Sent"
-                )}
-              />
-            </Suspense>
-          </div>
-        </div>
-        <div className="col-span-1 min-w-0">
-          <div className="bg-white rounded-lg shadow-lg min-h-[400px] lg:min-h-[500px]">
-            <Suspense fallback={<ChartSkeleton />}>
-              <NewRequestTrend
-                data={
-                  data.charts.find((c: ChartData) => c.chart_type === "bar")
-                    ?.data
-                }
-              />
-            </Suspense>
-          </div>
-        </div>
-      </div>
+      <DashboardGrid>
+        <ChartContainer>
+          <Suspense fallback={<ChartSkeleton />}>
+            <Details
+              data={data.statistics.filter(
+                (stat: Statistic) =>
+                  stat.title === "Opened Request" ||
+                  stat.title === "Engaged" ||
+                  stat.title === "EOI Sent"
+              )}
+            />
+          </Suspense>
+        </ChartContainer>
+        <ChartContainer>
+          <Suspense fallback={<ChartSkeleton />}>
+            <NewRequestTrend
+              data={
+                data.charts.find((c: ChartData) => c.chart_type === "bar")?.data
+              }
+            />
+          </Suspense>
+        </ChartContainer>
+      </DashboardGrid>
     </section>
   );
 }

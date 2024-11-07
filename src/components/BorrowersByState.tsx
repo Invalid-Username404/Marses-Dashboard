@@ -9,7 +9,7 @@ import { useTheme } from "next-themes";
 import { ChartData } from "@/types/dashboard";
 import { formatCurrency } from "@/utils/formatters";
 
-interface BorrowersByStateProps {
+export interface BorrowersByStateProps {
   data?: ChartData;
   className?: string;
 }

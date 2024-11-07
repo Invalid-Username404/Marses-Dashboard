@@ -1,16 +1,21 @@
 "use client";
 import { useState } from "react";
-import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
-import ProfilePicture from "@/components/ProfilePicture";
 import { signIn } from "next-auth/react";
+import AuthHeader from "@/components/auth/AuthHeader";
+import ProgressSteps from "@/components/auth/ProgressSteps";
+import AuthButton from "@/components/auth/AuthButton";
+import ErrorMessage from "@/components/auth/ErrorMessage";
+
 import {
   signUpSchema,
   type SignUpInput,
   signUpFieldSchemas,
 } from "@/lib/validations/auth";
 import { z } from "zod";
+import FirstStepForm from "@/components/auth/signup/FirstStepForm";
+import SecondStepForm from "@/components/auth/signup/SecondStepForm";
+import SignInLink from "@/components/auth/SignInLink";
 
 type ErrorState = {
   message: string;
@@ -175,300 +180,61 @@ export default function SignUp() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-8 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 p-4 sm:p-6 md:p-8 bg-white rounded-2xl shadow-lg">
-        {/* Logo and Header */}
-        <div className="flex flex-col items-center space-y-6">
-          <Image
-            src="/icons/logo.svg"
-            alt="logo"
-            width={80}
-            height={80}
-            className="w-auto h-auto"
-          />
-          <div className="text-center">
-            <h2 className="text-3xl font-bold text-gray-900">
-              Create your account
-            </h2>
-            <p className="mt-2 text-sm text-gray-600">
-              Join us to start your journey
-            </p>
-          </div>
-        </div>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4 py-8">
+      <div className="max-w-md w-full space-y-8 p-4 sm:p-6 md:p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-lg">
+        <AuthHeader
+          title="Create your account"
+          subtitle="Join us to start your journey"
+        />
 
-        {/* Progress Steps - Make more responsive */}
-        <div className="flex justify-center items-center gap-1 sm:gap-2 py-4">
-          {Array.from({ length: totalSteps }).map((_, index) => (
-            <div key={index} className="flex items-center">
-              <div
-                className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center 
-                  justify-center text-sm sm:text-base transition-colors ${
-                    step > index
-                      ? "bg-blue-600 text-white"
-                      : step === index + 1
-                      ? "bg-blue-100 text-blue-600 border-2 border-blue-600"
-                      : "bg-gray-100 text-gray-400"
-                  }`}
-              >
-                {index + 1}
-              </div>
-              {index < totalSteps - 1 && (
-                <div
-                  className={`w-8 sm:w-12 h-1 mx-1 sm:mx-2 transition-colors ${
-                    step > index + 1 ? "bg-blue-600" : "bg-gray-200"
-                  }`}
-                />
-              )}
-            </div>
-          ))}
-        </div>
+        <ProgressSteps currentStep={step} totalSteps={totalSteps} />
 
-        {/* Sign Up Form */}
+        {error && <ErrorMessage message={error.message} />}
+
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {step === 1 ? (
-            <div className="space-y-6">
-              <ProfilePicture
-                onImageSelect={(file) =>
-                  setFormData((prev) => ({ ...prev, profilePicture: file }))
-                }
-              />
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label
-                    htmlFor="firstName"
-                    className="text-sm font-medium text-gray-700"
-                  >
-                    First name
-                  </label>
-                  <input
-                    id="firstName"
-                    name="firstName"
-                    type="text"
-                    required
-                    className="mt-1 block w-full px-4 py-3 border border-gray-300 dark:border-gray-700 
-                           rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100
-                           focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                           placeholder:text-gray-400 dark:placeholder:text-gray-500
-                           transition-colors"
-                    placeholder="John"
-                    value={formData.firstName}
-                    onChange={handleInputChange}
-                  />
-                  {formErrors.firstName && (
-                    <p className="mt-1 text-sm text-red-600">
-                      {formErrors.firstName}
-                    </p>
-                  )}
-                </div>
-                <div>
-                  <label
-                    htmlFor="lastName"
-                    className="text-sm font-medium text-gray-700"
-                  >
-                    Last name
-                  </label>
-                  <input
-                    id="lastName"
-                    name="lastName"
-                    type="text"
-                    required
-                    className="mt-1 block w-full px-4 py-3 border border-gray-300 dark:border-gray-700 
-                           rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100
-                           focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                           placeholder:text-gray-400 dark:placeholder:text-gray-500
-                           transition-colors"
-                    placeholder="Doe"
-                    value={formData.lastName}
-                    onChange={handleInputChange}
-                  />
-                  {formErrors.lastName && (
-                    <p className="mt-1 text-sm text-red-600">
-                      {formErrors.lastName}
-                    </p>
-                  )}
-                </div>
-              </div>
-              <div>
-                <label
-                  htmlFor="email"
-                  className="text-sm font-medium text-gray-700"
-                >
-                  Email address
-                </label>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  className="mt-1 block w-full px-4 py-3 border border-gray-300 dark:border-gray-700 
-                         rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100
-                         focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                         placeholder:text-gray-400 dark:placeholder:text-gray-500
-                         transition-colors"
-                  placeholder="john@example.com"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                />
-                {formErrors.email && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {formErrors.email}
-                  </p>
-                )}
-              </div>
-            </div>
+            <FirstStepForm
+              formData={formData}
+              formErrors={formErrors}
+              handleInputChange={handleInputChange}
+              onImageSelect={(file) =>
+                setFormData((prev) => ({ ...prev, profilePicture: file }))
+              }
+            />
           ) : (
-            <div className="space-y-4">
-              <div>
-                <label
-                  htmlFor="password"
-                  className="text-sm font-medium text-gray-700"
-                >
-                  Password
-                </label>
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  required
-                  className="mt-1 block w-full px-4 py-3 border border-gray-300 dark:border-gray-700 
-                         rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100
-                         focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                         placeholder:text-gray-400 dark:placeholder:text-gray-500
-                         transition-colors"
-                  placeholder="••••••••"
-                  value={formData.password}
-                  onChange={handleInputChange}
-                />
-                {formErrors.password && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {formErrors.password}
-                  </p>
-                )}
-              </div>
-              <div>
-                <label
-                  htmlFor="confirmPassword"
-                  className="text-sm font-medium text-gray-700"
-                >
-                  Confirm password
-                </label>
-                <input
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type="password"
-                  required
-                  className="mt-1 block w-full px-4 py-3 border border-gray-300 dark:border-gray-700 
-                         rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100
-                         focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                         placeholder:text-gray-400 dark:placeholder:text-gray-500
-                         transition-colors"
-                  placeholder="••••••••"
-                  value={formData.confirmPassword}
-                  onChange={handleInputChange}
-                />
-                {formErrors.confirmPassword && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {formErrors.confirmPassword}
-                  </p>
-                )}
-              </div>
-              <div className="flex items-center">
-                <input
-                  id="terms"
-                  name="terms"
-                  type="checkbox"
-                  className="h-4 w-4 text-blue-600 rounded border-gray-300"
-                  checked={formData.terms}
-                  onChange={handleInputChange}
-                />
-                <label htmlFor="terms" className="ml-2 text-sm text-gray-600">
-                  I agree to the{" "}
-                  <Link
-                    href="/terms"
-                    className="text-blue-600 hover:text-blue-500"
-                  >
-                    Terms of Service
-                  </Link>{" "}
-                  and{" "}
-                  <Link
-                    href="/privacy"
-                    className="text-blue-600 hover:text-blue-500"
-                  >
-                    Privacy Policy
-                  </Link>
-                </label>
-              </div>
-            </div>
+            <SecondStepForm
+              formData={formData}
+              formErrors={formErrors}
+              handleInputChange={handleInputChange}
+            />
           )}
 
           <div className="flex justify-between">
             {step > 1 && (
-              <button
-                type="button"
-                onClick={() => setStep(step - 1)}
-                className="px-6 py-3 text-sm font-medium text-blue-600 hover:text-blue-500
-                       focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
-                       transition-colors"
-              >
+              <AuthButton variant="secondary" onClick={() => setStep(step - 1)}>
                 Back
-              </button>
+              </AuthButton>
             )}
-            <button
+            <AuthButton
               type="submit"
+              variant="primary"
+              fullWidth={step === 1}
               disabled={status !== "idle"}
-              className={`${
-                step === 1 ? "w-full" : "px-6"
-              } py-3 text-sm font-medium text-white bg-blue-600 
-                     hover:bg-blue-700 rounded-xl shadow-sm
-                     focus:outline-none focus:ring-2 focus:ring-offset-2 
-                     focus:ring-blue-500 transition-colors
-                     disabled:opacity-50 disabled:cursor-not-allowed
-                     flex items-center justify-center`}
+              loading={status !== "idle"}
+              loadingText={
+                status === "validating"
+                  ? "Validating..."
+                  : status === "submitting"
+                  ? "Creating Account..."
+                  : "Signing In..."
+              }
             >
-              {status !== "idle" ? (
-                <>
-                  <svg
-                    className="animate-spin h-5 w-5 mr-3"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    />
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                    />
-                  </svg>
-                  {status === "validating" && "Validating..."}
-                  {status === "submitting" && "Creating Account..."}
-                  {status === "signing-in" && "Signing In..."}
-                </>
-              ) : step < totalSteps ? (
-                "Continue"
-              ) : (
-                "Create Account"
-              )}
-            </button>
+              {step < totalSteps ? "Continue" : "Create Account"}
+            </AuthButton>
           </div>
         </form>
 
-        {/* Sign in link */}
-        <div className="text-center text-sm">
-          <span className="text-gray-600">Already have an account?</span>{" "}
-          <Link
-            href="/signin"
-            className="font-medium text-blue-600 hover:text-blue-500 transition-colors"
-          >
-            Sign in
-          </Link>
-        </div>
+        <SignInLink />
       </div>
     </div>
   );
