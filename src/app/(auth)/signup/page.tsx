@@ -26,7 +26,7 @@ type ErrorState = {
 export default function SignUp() {
   const [step, setStep] = useState(1);
   const totalSteps = 2;
-  const [loading, setLoading] = useState(false);
+  const [_loading, _setLoading] = useState(false);
   const [error, setError] = useState<ErrorState | null>(null);
   const [status, setStatus] = useState<
     "idle" | "validating" | "submitting" | "signing-in"

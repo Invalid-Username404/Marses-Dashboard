@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback } from "react";
 import {
   ComposableMap,
   Geographies,
@@ -13,7 +13,6 @@ import { useTheme } from "next-themes";
 import Image from "next/image";
 import australiaTopoJson from "../../public/data/maps/australia-states.geojson";
 import { Region } from "@/types/dashboard";
-import { formatCurrency } from "@/utils/formatters";
 
 export interface MapPreviewProps {
   data: Region[];

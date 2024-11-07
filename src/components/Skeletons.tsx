@@ -1,6 +1,5 @@
 "use client";
 import { motion } from "framer-motion";
-import { DynamicOptionsLoadingProps } from "next/dynamic";
 
 export function HeaderSkeleton() {
   return (

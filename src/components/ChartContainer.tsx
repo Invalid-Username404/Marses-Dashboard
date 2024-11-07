@@ -19,16 +19,19 @@ export default function ChartContainer({
   const [isDragging, setIsDragging] = useState(false);
   const width = useMotionValue(0);
   const dragStartX = useRef(0);
-  const activeSide = useRef<'left' | 'right'>('left');
+  const activeSide = useRef<"left" | "right">("left");
 
   useEffect(() => {
     if (containerRef.current) {
       const parentWidth = containerRef.current.parentElement?.offsetWidth || 0;
       width.set(parentWidth / 2);
     }
-  }, []);
+  }, [width]);
 
-  const handleDragStart = (event: React.MouseEvent<HTMLDivElement>, side: 'left' | 'right') => {
+  const handleDragStart = (
+    event: React.MouseEvent<HTMLDivElement>,
+    side: "left" | "right"
+  ) => {
     setIsDragging(true);
     dragStartX.current = event.clientX;
     activeSide.current = side;
@@ -38,9 +41,14 @@ export default function ChartContainer({
     if (!isDragging || !containerRef.current) return;
 
     const deltaX = event.clientX - dragStartX.current;
-    const newWidth = activeSide.current === "left" ? 
-      (position === "left" ? width.get() + deltaX : width.get() - deltaX) :
-      (position === "left" ? width.get() - deltaX : width.get() + deltaX);
+    const newWidth =
+      activeSide.current === "left"
+        ? position === "left"
+          ? width.get() + deltaX
+          : width.get() - deltaX
+        : position === "left"
+        ? width.get() - deltaX
+        : width.get() + deltaX;
 
     if (newWidth >= 300 && newWidth <= 800) {
       width.set(newWidth);
@@ -62,7 +70,7 @@ export default function ChartContainer({
       window.removeEventListener("mousemove", handleDrag);
       window.removeEventListener("mouseup", handleDragEnd);
     };
-  }, [isDragging]);
+  }, [isDragging, handleDrag, handleDragEnd]);
 
   return (
     <motion.div

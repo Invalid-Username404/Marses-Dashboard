@@ -10,11 +10,13 @@
       "warn",
       {
         "argsIgnorePattern": "^_",
-        "varsIgnorePattern": "^_"
+        "varsIgnorePattern": "^_",
+        "destructuredArrayIgnorePattern": "^_"
       }
     ],
     "react-hooks/exhaustive-deps": "warn",
     "react/no-unescaped-entities": "off",
-    "prefer-const": "warn"
+    "prefer-const": "warn",
+    "no-useless-catch": "warn"
   }
 }
