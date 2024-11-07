@@ -18,7 +18,7 @@ export const config = {
   },
   pages: {
     signIn: "/signin",
-    error: "/signin",
+    error: "/auth/error",
   },
   providers: [
     CredentialsProvider({
@@ -61,8 +61,8 @@ export const config = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
+    async jwt({ token, user, account, profile, trigger }) {
+      if (trigger === "signIn" && user) {
         token.id = user.id;
         token.email = user.email;
       }
@@ -76,6 +76,7 @@ export const config = {
       return session;
     },
   },
+  debug: process.env.NODE_ENV === "development",
 } satisfies NextAuthConfig;
 
 export const { handlers, auth, signIn, signOut } = NextAuth(config);

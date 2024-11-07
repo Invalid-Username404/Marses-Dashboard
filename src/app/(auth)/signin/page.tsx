@@ -30,21 +30,22 @@ export default function Signin() {
           email,
           password,
           redirect: false,
+          callbackUrl: "/dashboard",
         });
 
+        console.log("Sign in result:", result);
+
         if (result?.error) {
-          setError("Invalid email or password");
+          setError(result.error);
           return;
         }
 
         if (result?.ok) {
-          const params = new URLSearchParams(window.location.search);
-          const callbackUrl = params.get("callbackUrl") || "/dashboard";
-          router.replace(decodeURIComponent(callbackUrl));
+          router.push("/dashboard");
         }
       } catch (err) {
         console.error("Sign in error:", err);
-        setError("Something went wrong");
+        setError("An unexpected error occurred");
       } finally {
         setLoading(false);
       }

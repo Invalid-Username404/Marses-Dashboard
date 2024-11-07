@@ -18,16 +18,21 @@ export const config = {
 };
 
 export default async function middleware(request: Request) {
-  const token = await getToken({
-    req: request,
-    secret: process.env.AUTH_SECRET,
-  });
+  try {
+    const token = await getToken({
+      req: request,
+      secret: process.env.AUTH_SECRET,
+    });
 
-  if (!token) {
-    const signInUrl = new URL("/signin", request.url);
-    signInUrl.searchParams.set("callbackUrl", request.url);
-    return NextResponse.redirect(signInUrl);
+    if (!token) {
+      const signInUrl = new URL("/signin", request.url);
+      signInUrl.searchParams.set("callbackUrl", request.url);
+      return NextResponse.redirect(signInUrl);
+    }
+
+    return NextResponse.next();
+  } catch (error) {
+    console.error("Middleware error:", error);
+    return NextResponse.redirect(new URL("/signin", request.url));
   }
-
-  return NextResponse.next();
 }
