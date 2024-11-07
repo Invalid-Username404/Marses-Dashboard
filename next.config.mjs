@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  experimental: {
+    serverComponentsExternalPackages: ["mongoose"],
+  },
   webpack: (config) => {
     config.module.rules.push({
       test: /\.geojson$/,
@@ -8,11 +11,10 @@ const nextConfig = {
     });
     return config;
   },
-  experimental: {
-    serverComponentsExternalPackages: ["mongoose"],
-  },
-  eslint: {
-    ignoreDuringBuilds: true,
+  onError: async (err, req, res) => {
+    console.error(err);
+    res.statusCode = 500;
+    res.end("Internal Server Error");
   },
 };
 
